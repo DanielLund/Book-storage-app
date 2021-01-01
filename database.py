@@ -29,7 +29,7 @@ def add_book(title, author):
 
         cursor.execute('INSERT INTO books VALUES(?, ?, 0)', (title, author))
 
-    #using format string is bad because it allows for SQL injection attacks using DROP TABLE command and others.
+    #using format string is bad because it allows for SQL injection attacks.
 
 
 def mark_book_read(title):
