@@ -1,46 +1,59 @@
 """
 this is for storing and retrieving books from a list
 """
-import json
-
-
-books_file = 'books.json'
+import sqlite3
 
 
 def create_book_table():
-    with open(books_file, 'w') as file:
-        json.dump([], file)
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+
+    cursor.execute('CREATE TABLE IF NOT EXISTS books(title text, author text, read integer)')
+
+    connection.commit()
+    connection.close()
 
 
 def get_all_books():
-    with open(books_file, 'r') as file:
-        return json.load(file)
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM books')
+    books = [{'title': row[0], 'author': row[1], 'read': row[2]} for row in cursor.fetchall()]
+
+    connection.close()
+
+    return books
 
 
 def add_book(title, author):
-    books = get_all_books()
-    books.append({
-        'title': title,
-        'author': author,
-        'read': False
-    })
-    _save_all_books(books)
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
 
+    cursor.execute('INSERT INTO books VALUES(?, ?, 0)', (title, author))
 
-def _save_all_books(books):
-    with open(books_file, 'w') as file:
-        json.dump(books, file)
+    #using format string is bad because it allows for SQL injection attacks using DROP TABLE command and others.
+
+    connection.commit()
+    connection.close()
 
 
 def mark_book_read(title):
-    books = get_all_books()
-    for book in books:
-        if book['title'] == title:
-            book['read'] = True
-    _save_all_books(books)
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+
+    cursor.execute('UPDATE books SET read=1 WHERE title=?', (title,))
+
+    connection.commit()
+    connection.close()
 
 
-def delete_book(name):
-    books = get_all_books()
-    books = [book for book in books if book['title'] != name]
-    _save_all_books(books)
+def delete_book(title):
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+
+    cursor.execute('DELETE FROM books WHERE title=?', (title,))
+
+    connection.commit()
+    connection.close()
+

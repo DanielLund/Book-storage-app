@@ -8,7 +8,7 @@ Enter:
 - 'd' to delete a book 
 - 'q' to quit
 
-Your choice:"""
+Your choice: """
 
 
 def prompt_add_book():
@@ -19,7 +19,7 @@ def prompt_add_book():
 
 def show_books():
     for book in database.get_all_books():
-        read = 'YES' if book['read'] else 'NO'
+        read = 'YES' if book['read'] == 1 else 'NO'
         print(f"{book['title']} by {book['author']} - Read: {read}")
 
 
@@ -29,8 +29,8 @@ def mark_as_read():
 
 
 def prompt_delete_book():
-    name = input('what is the title of the book you want to delete: ')
-    database.delete_book(name)
+    title = input('what is the title of the book you want to delete: ')
+    database.delete_book(title)
 
 
 user_options = {
